@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Sports Betting Dashboard</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0B0E13;
+            --bg-secondary: #12151C;
+            --bg-card: #181C25;
+            --bg-card-hover: #1D2230;
+            --accent-primary: #3B82F6;
+            --accent-secondary: #8B5CF6;
+            --accent-success: #10B981;
+            --accent-danger: #EF4444;
+            --accent-warning: #F59E0B;
+            --accent-gold: #FCD34D;
+            --text-primary: #F9FAFB;
+            --text-secondary: #9CA3AF;
+            --text-tertiary: #6B7280;
+            --border-color: #1F2937;
+            --border-hover: #374151;
+            --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            --gradient-success: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            --gradient-danger: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
+        }
+
+        body {
+            background: var(--bg-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .header-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 1.5rem;
+            padding: 2.5rem 2rem;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .header .subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.625rem;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 0.625rem 1.5rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            margin-top: 1.25rem;
+            color: var(--accent-success);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+        }
+
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--accent-success);
+            border-radius: 50%;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            box-shadow: 0 0 10px var(--accent-success);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+
+        .sports-nav {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+        }
+
+        .sport-tab {
+            padding: 0.875rem 2rem;
+            border: 2px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.025em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sport-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .sport-tab span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .sport-tab:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .sport-tab.active {
+            background: var(--gradient-primary);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .game-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1.25rem;
+            padding: 1.75rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .game-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            background: var(--bg-card-hover);
+        }
+
+        .game-card:hover::before {
+            opacity: 1;
+        }
+
+        .game-card.live {
+            border-color: var(--accent-success);
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.2);
+        }
+
+        .game-card.live::before {
+            opacity: 1;
+            background: var(--gradient-success);
+        }
+
+        .game-status {
+            display: inline-block;
+            padding: 0.5rem 1.25rem;
+            background: rgba(156, 163, 175, 0.15);
+            color: var(--text-secondary);
+            border-radius: 9999px;
+            font-size: 0.8125rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            border: 1px solid rgba(156, 163, 175, 0.2);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .game-status.live {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-success);
+            border-color: rgba(16, 185, 129, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .matchup {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .team {
+            flex: 1;
+            text-align: center;
+        }
+
+        .team-logo {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 0.75rem;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+        }
+
+        .team-name {
+            font-size: 1.125rem;
+            font-weight: 800;
+            margin-bottom: 0.375rem;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .team-record {
+            font-size: 0.8125rem;
+            color: var(--text-tertiary);
+            font-weight: 500;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .team-rank {
+            display: inline-block;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.25rem 0.625rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .team-score {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--accent-success);
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: -0.03em;
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .vs {
+            font-size: 1.125rem;
+            font-weight: 800;
+            color: var(--text-tertiary);
+            padding: 0.625rem;
+            background: rgba(156, 163, 175, 0.1);
+            border-radius: 0.5rem;
+            letter-spacing: 0.1em;
+        }
+
+        .odds-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .odds-title {
+            font-size: 0.8125rem;
+            font-weight: 700;
+            color: var(--text-tertiary);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .odds-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .odd-item {
+            background: rgba(59, 130, 246, 0.05);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            transition: all 0.2s ease;
+        }
+
+        .odd-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .odd-label {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .odd-value {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .odd-value.positive {
+            color: var(--accent-success);
+        }
+
+        .odd-value.negative {
+            color: var(--accent-danger);
+        }
+
+        .venue-info {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .broadcast-badge {
+            display: inline-block;
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--accent-secondary);
+            padding: 0.375rem 0.875rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            margin-left: 0.5rem;
+        }
+
+        /* Golf-specific styles */
+        .golf-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1.25rem;
+            padding: 1.75rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+        }
+
+        .golf-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--border-hover);
+        }
+
+        .tournament-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .tournament-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .tournament-info {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .leaderboard {
+            margin-top: 1.5rem;
+        }
+
+        .leaderboard-header {
+            font-size: 0.8125rem;
+            font-weight: 700;
+            color: var(--text-tertiary);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .leader-row {
+            display: grid;
+            grid-template-columns: 2.5rem 1fr 4rem 4rem;
+            gap: 1rem;
+            padding: 0.875rem 1rem;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 0.75rem;
+            margin-bottom: 0.625rem;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .leader-row:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateX(4px);
+        }
+
+        .leader-row.first {
+            background: var(--gradient-primary);
+            border-color: transparent;
+        }
+
+        .leader-row.first * {
+            color: white !important;
+        }
+
+        .leader-position {
+            font-weight: 800;
+            color: var(--text-tertiary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .leader-name {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .leader-score {
+            font-weight: 800;
+            color: var(--accent-success);
+            font-family: 'JetBrains Mono', monospace;
+            text-align: right;
+        }
+
+        .leader-thru {
+            font-size: 0.8125rem;
+            color: var(--text-tertiary);
+            font-family: 'JetBrains Mono', monospace;
+            text-align: right;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 1.5rem;
+            border: 4px solid rgba(59, 130, 246, 0.2);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* UFC-specific styles */
+        .ufc-event {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1.25rem;
+            padding: 1.75rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+        }
+
+        .ufc-event:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--border-hover);
+        }
+
+        .event-title {
+            font-size: 1.375rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        .fighter-matchup {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .fighter {
+            flex: 1;
+            text-align: center;
+        }
+
+        .fighter-name {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .last-update {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 0.75rem;
+            font-size: 0.8125rem;
+            color: var(--text-tertiary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        @media (max-width: 1200px) {
+            .games-grid {
+                grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.25rem;
+            }
+
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .odds-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sport-tab {
+                padding: 0.75rem 1.5rem;
+                font-size: 0.9rem;
+            }
+
+            .leader-row {
+                grid-template-columns: 2rem 1fr 3.5rem 3.5rem;
+                gap: 0.625rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        function App() {
+            const [activeSport, setActiveSport] = useState('all');
+            const [nflGames, setNflGames] = useState([]);
+            const [ufcEvents, setUfcEvents] = useState([]);
+            const [cbbGames, setCbbGames] = useState([]);
+            const [golfTournaments, setGolfTournaments] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [lastUpdate, setLastUpdate] = useState(null);
+            const wsRef = useRef(null);
+
+            const API_BASE = 'http://localhost:8000';
+
+            // Initial data fetch
+            useEffect(() => {
+                fetchData();
+            }, []);
+
+            // WebSocket connection for real-time updates
+            useEffect(() => {
+                const connectWebSocket = () => {
+                    const ws = new WebSocket('ws://localhost:8000/ws');
+                    wsRef.current = ws;
+
+                    ws.onopen = () => {
+                        console.log('WebSocket connected - receiving updates every 3 seconds');
+                    };
+
+                    ws.onmessage = (event) => {
+                        const update = JSON.parse(event.data);
+                        if (update.type === 'update') {
+                            setNflGames(update.data.nfl || []);
+                            setUfcEvents(update.data.ufc || []);
+                            setCbbGames(update.data.cbb || []);
+                            setGolfTournaments(update.data.golf || []);
+                            setLastUpdate(new Date(update.timestamp));
+                            setLoading(false);
+                        }
+                    };
+
+                    ws.onerror = (error) => {
+                        console.error('WebSocket error:', error);
+                    };
+
+                    ws.onclose = () => {
+                        console.log('WebSocket disconnected, reconnecting...');
+                        setTimeout(connectWebSocket, 2000);
+                    };
+                };
+
+                connectWebSocket();
+
+                return () => {
+                    if (wsRef.current) {
+                        wsRef.current.close();
+                    }
+                };
+            }, []);
+
+            const fetchData = async () => {
+                try {
+                    const response = await fetch(`${API_BASE}/api/all`);
+                    const data = await response.json();
+                    
+                    setNflGames(data.nfl.games || []);
+                    setUfcEvents(data.ufc.events || []);
+                    setCbbGames(data.cbb.games || []);
+                    setGolfTournaments(data.golf.tournaments || []);
+                    setLastUpdate(new Date());
+                    setLoading(false);
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                    setLoading(false);
+                }
+            };
+
+            const NFLGame = ({ game }) => (
+                <div className={`game-card ${game.state === 'in' ? 'live' : ''}`}>
+                    <div className={`game-status ${game.state === 'in' ? 'live' : ''}`}>
+                        {game.state === 'in' ? '🔴 LIVE' : game.status}
+                    </div>
+                    
+                    <div className="matchup">
+                        <div className="team">
+                            {game.away_team.logo && (
+                                <img src={game.away_team.logo} alt={game.away_team.name} className="team-logo" />
+                            )}
+                            <div className="team-name">{game.away_team.abbreviation}</div>
+                            <div className="team-record">{game.away_team.record}</div>
+                            <div className="team-score">{game.away_team.score}</div>
+                        </div>
+                        
+                        <div className="vs">VS</div>
+                        
+                        <div className="team">
+                            {game.home_team.logo && (
+                                <img src={game.home_team.logo} alt={game.home_team.name} className="team-logo" />
+                            )}
+                            <div className="team-name">{game.home_team.abbreviation}</div>
+                            <div className="team-record">{game.home_team.record}</div>
+                            <div className="team-score">{game.home_team.score}</div>
+                        </div>
+                    </div>
+
+                    <div className="odds-section">
+                        <div className="odds-title">Betting Lines</div>
+                        <div className="odds-grid">
+                            <div className="odd-item">
+                                <div className="odd-label">Spread</div>
+                                <div className="odd-value">{game.odds.spread}</div>
+                            </div>
+                            <div className="odd-item">
+                                <div className="odd-label">O/U</div>
+                                <div className="odd-value">{game.odds.over_under}</div>
+                            </div>
+                            <div className="odd-item">
+                                <div className="odd-label">ML</div>
+                                <div className={`odd-value ${game.odds.moneyline_home < 0 ? 'negative' : 'positive'}`}>
+                                    {game.odds.moneyline_home > 0 ? '+' : ''}{game.odds.moneyline_home}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="venue-info">
+                        📍 {game.venue}
+                        {game.broadcast !== 'N/A' && (
+                            <span className="broadcast-badge">📺 {game.broadcast}</span>
+                        )}
+                    </div>
+                </div>
+            );
+
+            const CBBGame = ({ game }) => (
+                <div className={`game-card ${game.state === 'in' ? 'live' : ''}`}>
+                    <div className={`game-status ${game.state === 'in' ? 'live' : ''}`}>
+                        {game.state === 'in' ? '🔴 LIVE' : game.status}
+                    </div>
+                    
+                    <div className="matchup">
+                        <div className="team">
+                            {game.away_team.rank && (
+                                <div className="team-rank">#{game.away_team.rank}</div>
+                            )}
+                            {game.away_team.logo && (
+                                <img src={game.away_team.logo} alt={game.away_team.name} className="team-logo" />
+                            )}
+                            <div className="team-name">{game.away_team.abbreviation}</div>
+                            <div className="team-record">{game.away_team.record}</div>
+                            <div className="team-score">{game.away_team.score}</div>
+                        </div>
+                        
+                        <div className="vs">VS</div>
+                        
+                        <div className="team">
+                            {game.home_team.rank && (
+                                <div className="team-rank">#{game.home_team.rank}</div>
+                            )}
+                            {game.home_team.logo && (
+                                <img src={game.home_team.logo} alt={game.home_team.name} className="team-logo" />
+                            )}
+                            <div className="team-name">{game.home_team.abbreviation}</div>
+                            <div className="team-record">{game.home_team.record}</div>
+                            <div className="team-score">{game.home_team.score}</div>
+                        </div>
+                    </div>
+
+                    <div className="odds-section">
+                        <div className="odds-title">Betting Lines</div>
+                        <div className="odds-grid">
+                            <div className="odd-item">
+                                <div className="odd-label">Spread</div>
+                                <div className="odd-value">{game.odds.spread}</div>
+                            </div>
+                            <div className="odd-item">
+                                <div className="odd-label">O/U</div>
+                                <div className="odd-value">{game.odds.over_under}</div>
+                            </div>
+                            <div className="odd-item">
+                                <div className="odd-label">ML</div>
+                                <div className={`odd-value ${game.odds.moneyline_home < 0 ? 'negative' : 'positive'}`}>
+                                    {game.odds.moneyline_home > 0 ? '+' : ''}{game.odds.moneyline_home}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="venue-info">
+                        📍 {game.venue}
+                        {game.broadcast !== 'N/A' && (
+                            <span className="broadcast-badge">📺 {game.broadcast}</span>
+                        )}
+                    </div>
+                </div>
+            );
+
+            const UFCEvent = ({ event }) => (
+                <div className="ufc-event">
+                    <div className="game-status">{event.status}</div>
+                    <div className="event-title">{event.event_name}</div>
+                    
+                    <div className="fighter-matchup">
+                        <div className="fighter">
+                            <div className="fighter-name">{event.fighter1}</div>
+                            <div className="odd-value positive">
+                                {event.odds.fighter1_ml < 0 ? '' : '+'}{event.odds.fighter1_ml}
+                            </div>
+                        </div>
+                        
+                        <div className="vs">VS</div>
+                        
+                        <div className="fighter">
+                            <div className="fighter-name">{event.fighter2}</div>
+                            <div className="odd-value positive">
+                                {event.odds.fighter2_ml < 0 ? '' : '+'}{event.odds.fighter2_ml}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="venue-info">
+                        📅 {event.date} {event.time && `• ${event.time}`}
+                        <br/>
+                        📍 {event.venue}, {event.city}
+                    </div>
+                </div>
+            );
+
+            const GolfTournament = ({ tournament }) => (
+                <div className="golf-card">
+                    <div className="game-status">{tournament.status}</div>
+                    <div className="tournament-header">
+                        <div className="tournament-name">{tournament.tournament_name}</div>
+                        <div className="tournament-info">
+                            <span>🏌️ Round {tournament.round}</span>
+                            <span>📍 {tournament.location}</span>
+                            {tournament.purse !== 'N/A' && <span>💰 {tournament.purse}</span>}
+                        </div>
+                    </div>
+
+                    <div className="leaderboard">
+                        <div className="leaderboard-header">Leaderboard</div>
+                        {tournament.leaders.map((leader, idx) => (
+                            <div key={idx} className={`leader-row ${idx === 0 ? 'first' : ''}`}>
+                                <div className="leader-position">{leader.position}</div>
+                                <div className="leader-name">{leader.name}</div>
+                                <div className="leader-score">{leader.score}</div>
+                                <div className="leader-thru">{leader.thru}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="app-container">
+                    <div className="header">
+                        <div className="header-content">
+                            <h1>Elite Odds</h1>
+                            <div className="subtitle">Professional Sports Betting Dashboard</div>
+                            <div className="live-indicator">
+                                <div className="live-dot"></div>
+                                LIVE DATA • 3 SECOND UPDATES
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="sports-nav">
+                        <button 
+                            className={`sport-tab ${activeSport === 'all' ? 'active' : ''}`}
+                            onClick={() => setActiveSport('all')}
+                        >
+                            <span>All Sports</span>
+                        </button>
+                        <button 
+                            className={`sport-tab ${activeSport === 'nfl' ? 'active' : ''}`}
+                            onClick={() => setActiveSport('nfl')}
+                        >
+                            <span>🏈 NFL</span>
+                        </button>
+                        <button 
+                            className={`sport-tab ${activeSport === 'cbb' ? 'active' : ''}`}
+                            onClick={() => setActiveSport('cbb')}
+                        >
+                            <span>🏀 College Basketball</span>
+                        </button>
+                        <button 
+                            className={`sport-tab ${activeSport === 'ufc' ? 'active' : ''}`}
+                            onClick={() => setActiveSport('ufc')}
+                        >
+                            <span>🥊 UFC</span>
+                        </button>
+                        <button 
+                            className={`sport-tab ${activeSport === 'golf' ? 'active' : ''}`}
+                            onClick={() => setActiveSport('golf')}
+                        >
+                            <span>⛳ Golf</span>
+                        </button>
+                    </div>
+
+                    {loading ? (
+                        <div className="loading">
+                            <div className="spinner"></div>
+                            <div>Loading live sports data...</div>
+                        </div>
+                    ) : (
+                        <>
+                            {(activeSport === 'all' || activeSport === 'nfl') && nflGames.length > 0 && (
+                                <div className="games-grid">
+                                    {nflGames.map(game => (
+                                        <NFLGame key={game.id} game={game} />
+                                    ))}
+                                </div>
+                            )}
+
+                            {(activeSport === 'all' || activeSport === 'cbb') && cbbGames.length > 0 && (
+                                <div className="games-grid">
+                                    {cbbGames.map(game => (
+                                        <CBBGame key={game.id} game={game} />
+                                    ))}
+                                </div>
+                            )}
+
+                            {(activeSport === 'all' || activeSport === 'ufc') && ufcEvents.length > 0 && (
+                                <div className="games-grid">
+                                    {ufcEvents.map(event => (
+                                        <UFCEvent key={event.id} event={event} />
+                                    ))}
+                                </div>
+                            )}
+
+                            {(activeSport === 'all' || activeSport === 'golf') && golfTournaments.length > 0 && (
+                                <div className="games-grid">
+                                    {golfTournaments.map(tournament => (
+                                        <GolfTournament key={tournament.id} tournament={tournament} />
+                                    ))}
+                                </div>
+                            )}
+
+                            {activeSport === 'all' && nflGames.length === 0 && cbbGames.length === 0 && 
+                             ufcEvents.length === 0 && golfTournaments.length === 0 && (
+                                <div className="loading">
+                                    <div style={{fontSize: '3rem', marginBottom: '1rem'}}>📅</div>
+                                    <div style={{fontSize: '1.25rem', fontWeight: '700', marginBottom: '0.5rem'}}>
+                                        No Live or Upcoming Games
+                                    </div>
+                                    <div style={{color: 'var(--text-tertiary)'}}>
+                                        Check back during game days for live action!
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeSport === 'nfl' && nflGames.length === 0 && (
+                                <div className="loading">
+                                    <div style={{fontSize: '3rem', marginBottom: '1rem'}}>🏈</div>
+                                    <div style={{fontSize: '1.25rem', fontWeight: '700', marginBottom: '0.5rem'}}>
+                                        No Live or Upcoming NFL Games
+                                    </div>
+                                    <div style={{color: 'var(--text-tertiary)'}}>
+                                        NFL season: September - February<br/>
+                                        Games typically on Thursday, Sunday, and Monday
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeSport === 'cbb' && cbbGames.length === 0 && (
+                                <div className="loading">
+                                    <div style={{fontSize: '3rem', marginBottom: '1rem'}}>🏀</div>
+                                    <div style={{fontSize: '1.25rem', fontWeight: '700', marginBottom: '0.5rem'}}>
+                                        No Live or Upcoming College Basketball Games
+                                    </div>
+                                    <div style={{color: 'var(--text-tertiary)'}}>
+                                        CBB season: November - April<br/>
+                                        Games typically in evenings and weekends
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeSport === 'ufc' && ufcEvents.length === 0 && (
+                                <div className="loading">
+                                    <div style={{fontSize: '3rem', marginBottom: '1rem'}}>🥊</div>
+                                    <div style={{fontSize: '1.25rem', fontWeight: '700', marginBottom: '0.5rem'}}>
+                                        No Upcoming UFC Events
+                                    </div>
+                                    <div style={{color: 'var(--text-tertiary)'}}>
+                                        Check back soon for upcoming fight cards!
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeSport === 'golf' && golfTournaments.length === 0 && (
+                                <div className="loading">
+                                    <div style={{fontSize: '3rem', marginBottom: '1rem'}}>⛳</div>
+                                    <div style={{fontSize: '1.25rem', fontWeight: '700', marginBottom: '0.5rem'}}>
+                                        No Live or Upcoming Golf Tournaments
+                                    </div>
+                                    <div style={{color: 'var(--text-tertiary)'}}>
+                                        PGA Tour events are held throughout the year
+                                    </div>
+                                </div>
+                            )}
+
+                            {lastUpdate && (
+                                <div className="last-update">
+                                    Last updated: {lastUpdate.toLocaleTimeString()} • WebSocket connected • 3 second refresh
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
